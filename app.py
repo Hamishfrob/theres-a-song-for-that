@@ -47,21 +47,21 @@ def match():
 
     description = data['description'].strip()
 
-    message = client.messages.create(
-        model='claude-sonnet-4-6',
-        max_tokens=1024,
-        messages=[{
-            'role': 'user',
-            'content': f'{PROMPT}\n\nDescription: {description}'
-        }]
-    )
-
     try:
+        message = client.messages.create(
+            model='claude-sonnet-4-6',
+            max_tokens=1024,
+            system=PROMPT,
+            messages=[{
+                'role': 'user',
+                'content': description
+            }]
+        )
         text = message.content[0].text
         songs = json.loads(text)
         return jsonify(songs)
-    except (json.JSONDecodeError, IndexError):
-        return jsonify({'error': 'Failed to parse response'}), 500
+    except Exception:
+        return jsonify({'error': 'Failed to get song matches. Please try again.'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
