@@ -562,6 +562,7 @@
         let phraseIdx = 0;
 
         function startCycle() {
+            stopCycle();
             phraseIdx = 0;
             oraclePhrase.textContent = PHRASES[0];
             oraclePhrase.style.opacity = '1';
@@ -591,15 +592,20 @@
         function showResults(songs) {
             stopCycle();
             thinkingScreen.style.display = 'none';
-            resultsScreen.scrollTop = 0;
 
+            if (!Array.isArray(songs) || songs.length === 0) {
+                showInputError();
+                return;
+            }
+
+            resultsScreen.scrollTop = 0;
             cardsContainer.innerHTML = '';
             songs.forEach((song, i) => {
                 const card = buildCard(song, GLOWS[i % GLOWS.length]);
                 cardsContainer.appendChild(card);
                 // Staggered reveal
                 requestAnimationFrame(() =>
-                    setTimeout(() => card.classList.add('visible'), i * 430 + 60)
+                    setTimeout(() => card.classList.add('visible'), i * 360 + 60)
                 );
             });
 
