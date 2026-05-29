@@ -64,4 +64,4 @@ def match():
         return jsonify({'error': 'Failed to get song matches. Please try again.'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, load_dotenv=False)

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>there's a song for that</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-display: 'Cormorant Garamond', 'Georgia', serif;
+            --font-body: 'DM Sans', system-ui, sans-serif;
+
+            --text-dark:   #1e1040;
+            --text-medium: #3d2060;
+            --text-muted:  rgba(30, 16, 64, 0.42);
+            --text-ghost:  rgba(30, 16, 64, 0.28);
+
+            --accent: #bf7a08;
+
+            --glow-rose:   rgba(245, 168, 188, 0.6);
+            --glow-amber:  rgba(250, 198, 100, 0.6);
+            --glow-violet: rgba(190, 120, 210, 0.6);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-dark);
+        }
+
+        /* ─── Background ──────────────────────────────────── */
+        .bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(
+                ellipse 130% 130% at 50% 58%,
+                #fce7c0 0%,
+                #f8c4cc 16%,
+                #d882b8 36%,
+                #9858a8 56%,
+                #5c3490 74%,
+                #2e1455 100%
+            );
+        }
+
+        /* grain overlay for depth */
+        .bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        /* ─── Screens ─────────────────────────────────────── */
+        #input-screen,
+        #thinking-screen,
+        #results-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .hidden { display: none !important; }
+
+        /* ─── INPUT SCREEN ────────────────────────────────── */
+        #input-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .wordmark {
+            position: absolute;
+            top: 2.4rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-display);
+            font-weight: 300;
+            font-size: 0.78rem;
+            letter-spacing: 0.22em;
+            text-transform: lowercase;
+            color: var(--text-ghost);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .input-stage {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .line-field {
+            width: 100%;
+            border-bottom: 1px solid rgba(30, 16, 64, 0.22);
+            padding-bottom: 0.6rem;
+            transition: border-color 0.4s ease;
+        }
+
+        .line-field:focus-within {
+            border-color: rgba(30, 16, 64, 0.48);
+        }
+
+        #main-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: var(--font-display);
+            font-style: italic;
+            font-weight: 300;
+            font-size: 1.55rem;
+            line-height: 1.4;
+            color: var(--text-dark);
+            text-align: center;
+            caret-color: var(--accent);
+        }
+
+        #main-input::placeholder {
+            color: var(--text-ghost);
+            font-style: italic;
+        }
+
+        .oracle-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 0.78rem;
+            letter-spacing: 0.16em;
+            color: var(--text-muted);
+            padding: 0.35rem 0.7rem;
+            transition: color 0.3s ease, letter-spacing 0.4s ease;
+        }
+
+        .oracle-btn:hover {
+            color: var(--text-dark);
+            letter-spacing: 0.22em;
+        }
+
+        .inline-error {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 0.88rem;
+            color: rgba(160, 60, 60, 0.75);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            min-height: 1.2em;
+        }
+
+        /* ─── THINKING SCREEN ─────────────────────────────── */
+        #thinking-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #particles-wrap {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .pt {
+            position: absolute;
+            border-radius: 50%;
+            animation: drift linear infinite;
+        }
+
+        @keyframes drift {
+            0%   { transform: translate(0, 0) scale(1);   opacity: 0; }
+            8%   { opacity: var(--pk, 0.4); }
+            88%  { opacity: var(--pk, 0.4); }
+            100% { transform: translate(var(--dx,0px), var(--dy,-120px)) scale(0.3); opacity: 0; }
+        }
+
+        .oracle-phrase {
+            position: relative;
+            z-index: 1;
+            font-family: var(--font-display);
+            font-style: italic;
+            font-weight: 300;
+            font-size: 1.25rem;
+            letter-spacing: 0.06em;
+            color: var(--text-medium);
+            text-align: center;
+            transition: opacity 0.4s ease;
+            padding: 0 2rem;
+        }
+
+        /* ─── RESULTS SCREEN ──────────────────────────────── */
+        #results-screen {
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Sticky compact bar */
+        .compact-bar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+            flex-shrink: 0;
+        }
+
+        .compact-mark {
+            font-family: var(--font-display);
+            font-weight: 300;
+            font-size: 0.72rem;
+            letter-spacing: 0.2em;
+            text-transform: lowercase;
+            color: var(--text-ghost);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .compact-divider {
+            width: 1px;
+            height: 18px;
+            background: rgba(30, 16, 64, 0.18);
+            flex-shrink: 0;
+        }
+
+        #compact-input {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(30, 16, 64, 0.18);
+            outline: none;
+            font-family: var(--font-display);
+            font-style: italic;
+            font-weight: 300;
+            font-size: 0.98rem;
+            color: var(--text-dark);
+            padding: 0.2rem 0;
+            transition: border-color 0.3s ease;
+        }
+
+        #compact-input::placeholder {
+            color: var(--text-ghost);
+        }
+
+        #compact-input:focus {
+            border-color: rgba(30, 16, 64, 0.38);
+        }
+
+        .compact-go {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 0.2rem 0.4rem;
+            flex-shrink: 0;
+            transition: color 0.2s ease;
+        }
+
+        .compact-go:hover { color: var(--text-dark); }
+
+        /* Cards area */
+        .cards-wrap {
+            flex: 1;
+            padding: 2.5rem 1.5rem 4rem;
+            max-width: 700px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .reveal-label {
+            font-family: var(--font-display);
+            font-weight: 300;
+            font-size: 0.72rem;
+            letter-spacing: 0.2em;
+            text-transform: lowercase;
+            color: var(--text-ghost);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        #cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+        }
+
+        /* ─── SONG CARDS ──────────────────────────────────── */
+        .song-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            border-radius: 22px;
+            padding: 2rem 2.2rem 1.8rem;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(32px);
+            transition:
+                opacity  700ms ease-out,
+                transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 280ms ease;
+            box-shadow:
+                0 4px 28px rgba(46, 20, 85, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.52);
+        }
+
+        .song-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .song-card.visible:hover {
+            box-shadow:
+                0 10px 44px rgba(46, 20, 85, 0.17),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            border-color: rgba(255, 255, 255, 0.56);
+        }
+
+        /* Stained-glass light bleed per card */
+        .card-light {
+            position: absolute;
+            top: -40%;
+            left: -15%;
+            width: 65%;
+            height: 65%;
+            border-radius: 50%;
+            filter: blur(44px);
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .card-body { position: relative; z-index: 1; }
+
+        .song-title {
+            font-family: var(--font-display);
+            font-weight: 500;
+            font-size: 1.9rem;
+            line-height: 1.15;
+            color: var(--accent);
+            margin-bottom: 0.45rem;
+            letter-spacing: 0.01em;
+        }
+
+        .song-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-bottom: 1.3rem;
+        }
+
+        .artist {
+            font-family: var(--font-body);
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-medium);
+            letter-spacing: 0.025em;
+        }
+
+        .dot {
+            font-size: 0.7rem;
+            color: var(--text-ghost);
+        }
+
+        .year {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .card-rule {
+            height: 1px;
+            background: linear-gradient(90deg, rgba(30,16,64,0.14) 0%, transparent 100%);
+            margin-bottom: 1.2rem;
+        }
+
+        .song-why {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 0.93rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+            margin-bottom: 1.55rem;
+        }
+
+        .song-links {
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 0.38rem 0.95rem;
+            border-radius: 100px;
+            font-family: var(--font-body);
+            font-size: 0.76rem;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            text-decoration: none;
+            border: 1px solid;
+            transition: background 0.22s ease, transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .pill:hover { transform: translateY(-1px); opacity: 0.85; }
+
+        .pill-spotify {
+            color: #1a4830;
+            background: rgba(100, 195, 130, 0.18);
+            border-color: rgba(100, 195, 130, 0.38);
+        }
+
+        .pill-youtube {
+            color: #4a1818;
+            background: rgba(215, 100, 100, 0.16);
+            border-color: rgba(215, 100, 100, 0.32);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg"></div>
+
+    <!-- ── Input ─────────────────────────────────────────── -->
+    <div id="input-screen">
+        <span class="wordmark">there's a song for that</span>
+
+        <div class="input-stage">
+            <div class="line-field">
+                <input
+                    type="text"
+                    id="main-input"
+                    placeholder="describe a feeling, a moment, a place."
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+            </div>
+            <button class="oracle-btn" id="main-submit">find the song →</button>
+            <p class="inline-error" id="inline-error"></p>
+        </div>
+    </div>
+
+    <!-- ── Thinking ───────────────────────────────────────── -->
+    <div id="thinking-screen">
+        <div id="particles-wrap"></div>
+        <p class="oracle-phrase" id="oracle-phrase">searching through sound...</p>
+    </div>
+
+    <!-- ── Results ────────────────────────────────────────── -->
+    <div id="results-screen">
+        <div class="compact-bar">
+            <span class="compact-mark">there's a song for that</span>
+            <div class="compact-divider"></div>
+            <input
+                type="text"
+                id="compact-input"
+                placeholder="try another feeling..."
+                autocomplete="off"
+                spellcheck="false"
+            />
+            <button class="compact-go" id="compact-submit">→</button>
+        </div>
+
+        <div class="cards-wrap">
+            <p class="reveal-label">three songs for your feeling</p>
+            <div id="cards-container"></div>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        // ── Config ─────────────────────────────────────────
+        const PHRASES = [
+            'searching through sound...',
+            'crossing genres...',
+            'tracing the feeling...',
+            'listening...',
+            'finding what you mean...',
+            'reaching back through time...'
+        ];
+        const GLOWS = [
+            'rgba(245, 168, 188, 0.65)',
+            'rgba(250, 196, 96, 0.65)',
+            'rgba(188, 114, 210, 0.65)'
+        ];
+        const PARTICLE_COLORS = [
+            '#f5b4c2', '#fde0b0', '#c070aa',
+            '#f0c060', '#e890b4', '#d4a0e8', '#fbd0a0'
+        ];
+
+        // ── DOM ────────────────────────────────────────────
+        const inputScreen    = document.getElementById('input-screen');
+        const thinkingScreen = document.getElementById('thinking-screen');
+        const resultsScreen  = document.getElementById('results-screen');
+        const mainInput      = document.getElementById('main-input');
+        const compactInput   = document.getElementById('compact-input');
+        const cardsContainer = document.getElementById('cards-container');
+        const inlineError    = document.getElementById('inline-error');
+        const oraclePhrase   = document.getElementById('oracle-phrase');
+        const particlesWrap  = document.getElementById('particles-wrap');
+
+        // ── Particles ──────────────────────────────────────
+        (function spawnParticles() {
+            for (let i = 0; i < 30; i++) {
+                const el = document.createElement('div');
+                el.className = 'pt';
+                const size = Math.random() * 3.5 + 1.8;
+                const color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+                const dur   = (Math.random() * 14 + 9).toFixed(1);
+                const delay = (Math.random() * -22).toFixed(1);
+                const dx    = ((Math.random() - 0.5) * 200).toFixed(0);
+                const dy    = (-(Math.random() * 240 + 60)).toFixed(0);
+                const pk    = (Math.random() * 0.45 + 0.22).toFixed(2);
+                el.style.cssText = `
+                    width:${size}px; height:${size}px;
+                    left:${(Math.random()*100).toFixed(1)}%;
+                    top:${(Math.random()*100).toFixed(1)}%;
+                    background:${color};
+                    box-shadow:0 0 ${(size*2.2).toFixed(0)}px ${color};
+                    --dx:${dx}px; --dy:${dy}px; --pk:${pk};
+                    animation-duration:${dur}s;
+                    animation-delay:${delay}s;
+                `;
+                particlesWrap.appendChild(el);
+            }
+        })();
+
+        // ── Thinking cycle ─────────────────────────────────
+        let phraseTimer = null;
+        let phraseIdx = 0;
+
+        function startCycle() {
+            phraseIdx = 0;
+            oraclePhrase.textContent = PHRASES[0];
+            oraclePhrase.style.opacity = '1';
+            phraseTimer = setInterval(() => {
+                oraclePhrase.style.opacity = '0';
+                setTimeout(() => {
+                    phraseIdx = (phraseIdx + 1) % PHRASES.length;
+                    oraclePhrase.textContent = PHRASES[phraseIdx];
+                    oraclePhrase.style.opacity = '1';
+                }, 420);
+            }, 2700);
+        }
+
+        function stopCycle() {
+            clearInterval(phraseTimer);
+            phraseTimer = null;
+        }
+
+        // ── Screen helpers ─────────────────────────────────
+        function showThinking() {
+            inputScreen.style.display  = 'none';
+            resultsScreen.style.display = 'none';
+            thinkingScreen.style.display = 'flex';
+            startCycle();
+        }
+
+        function showResults(songs) {
+            stopCycle();
+            thinkingScreen.style.display = 'none';
+            resultsScreen.scrollTop = 0;
+
+            cardsContainer.innerHTML = '';
+            songs.forEach((song, i) => {
+                const card = buildCard(song, GLOWS[i % GLOWS.length]);
+                cardsContainer.appendChild(card);
+                // Staggered reveal
+                requestAnimationFrame(() =>
+                    setTimeout(() => card.classList.add('visible'), i * 430 + 60)
+                );
+            });
+
+            compactInput.value = '';
+            resultsScreen.style.display = 'flex';
+        }
+
+        function showInputError() {
+            stopCycle();
+            thinkingScreen.style.display  = 'none';
+            inputScreen.style.display = 'flex';
+
+            inlineError.textContent = 'Something slipped through the ether. Try again.';
+            inlineError.style.opacity = '1';
+            setTimeout(() => { inlineError.style.opacity = '0'; }, 4500);
+        }
+
+        // ── Card builder ───────────────────────────────────
+        function esc(s) {
+            const d = document.createElement('div');
+            d.textContent = String(s ?? '');
+            return d.innerHTML;
+        }
+
+        function buildCard(song, glow) {
+            const spotifyHref = `https://open.spotify.com/search/${encodeURIComponent(song.spotify_search || '')}`;
+            const ytHref      = `https://www.youtube.com/results?search_query=${encodeURIComponent(song.youtube_search || '')}`;
+
+            const card = document.createElement('div');
+            card.className = 'song-card';
+            card.innerHTML = `
+                <div class="card-light" style="background:${glow};"></div>
+                <div class="card-body">
+                    <h2 class="song-title">${esc(song.title)}</h2>
+                    <div class="song-meta">
+                        <span class="artist">${esc(song.artist)}</span>
+                        <span class="dot">·</span>
+                        <span class="year">${esc(song.year)}</span>
+                    </div>
+                    <div class="card-rule"></div>
+                    <p class="song-why">${esc(song.why)}</p>
+                    <div class="song-links">
+                        <a href="${spotifyHref}" target="_blank" rel="noopener noreferrer" class="pill pill-spotify">Listen on Spotify</a>
+                        <a href="${ytHref}" target="_blank" rel="noopener noreferrer" class="pill pill-youtube">Watch on YouTube</a>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // ── API ────────────────────────────────────────────
+        async function query(description) {
+            if (!description.trim()) return;
+            showThinking();
+            try {
+                const res  = await fetch('/api/match', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ description: description.trim() })
+                });
+                const data = await res.json();
+                if (!res.ok || data.error) throw new Error(data.error || 'Server error');
+                showResults(data);
+            } catch {
+                showInputError();
+            }
+        }
+
+        // ── Events ─────────────────────────────────────────
+        document.getElementById('main-submit').addEventListener('click', () =>
+            query(mainInput.value)
+        );
+        mainInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') query(mainInput.value);
+        });
+
+        document.getElementById('compact-submit').addEventListener('click', () =>
+            query(compactInput.value)
+        );
+        compactInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') query(compactInput.value);
+        });
+
+        // Focus on load
+        mainInput.focus();
+    })();
+    </script>
+</body>
+</html>
