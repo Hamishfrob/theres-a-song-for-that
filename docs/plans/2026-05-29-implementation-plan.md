@@ -54,7 +54,7 @@ Expected: All packages install without error. `flask`, `anthropic`, and `python-
 
 **Step 5: Create `.env` with real API key**
 
-Copy `.env.example` to `.env`. Add your Anthropic API key (get it from console.anthropic.com).
+Your Anthropic API key is already set up in `C:\Users\hamis\OneDrive\Coding\index-ma-study\.env`. Copy the `ANTHROPIC_API_KEY` value from there into a new `.env` file in this project. No need to generate a new key.
 
 **Step 6: Commit**
 
