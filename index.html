@@ -736,6 +736,8 @@
         });
 
         document.getElementById('start-over-btn').addEventListener('click', () => {
+            stopCycle();
+            thinkingScreen.style.display = 'none';
             resultsScreen.style.display = 'none';
             inputScreen.style.display = 'flex';
             mainInput.value = '';
