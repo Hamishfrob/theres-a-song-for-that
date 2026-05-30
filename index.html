@@ -102,8 +102,8 @@
             left: 50%;
             transform: translateX(-50%);
             font-family: var(--font-display);
-            font-weight: 300;
-            font-size: 0.78rem;
+            font-weight: 400;
+            font-size: var(--fs-xs);
             letter-spacing: 0.22em;
             text-transform: lowercase;
             color: var(--text-ghost);
@@ -117,18 +117,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2rem;
+            gap: var(--sp-lg);
         }
 
         .line-field {
             width: 100%;
-            border-bottom: 1px solid rgba(30, 16, 64, 0.22);
+            border-bottom: 1px solid rgba(30, 45, 53, 0.22);
             padding-bottom: 0.6rem;
             transition: border-color 0.4s ease;
         }
 
         .line-field:focus-within {
-            border-color: rgba(30, 16, 64, 0.48);
+            border-color: rgba(30, 45, 53, 0.48);
         }
 
         #main-input {
@@ -137,9 +137,8 @@
             border: none;
             outline: none;
             font-family: var(--font-display);
-            font-style: italic;
-            font-weight: 300;
-            font-size: 1.55rem;
+            font-weight: 400;
+            font-size: var(--fs-lg);
             line-height: 1.4;
             color: var(--text-dark);
             text-align: center;
@@ -148,7 +147,6 @@
 
         #main-input::placeholder {
             color: var(--text-ghost);
-            font-style: italic;
         }
 
         .oracle-btn {
@@ -156,8 +154,8 @@
             border: none;
             cursor: pointer;
             font-family: var(--font-body);
-            font-weight: 300;
-            font-size: 0.78rem;
+            font-weight: 400;
+            font-size: var(--fs-xs);
             letter-spacing: 0.16em;
             color: var(--text-muted);
             padding: 0.35rem 0.7rem;
@@ -171,8 +169,7 @@
 
         .inline-error {
             font-family: var(--font-display);
-            font-style: italic;
-            font-size: 0.88rem;
+            font-size: var(--fs-xs);
             color: rgba(160, 60, 60, 0.75);
             text-align: center;
             opacity: 0;
@@ -213,7 +210,7 @@
             z-index: 1;
             font-family: var(--font-display);
             font-style: italic;
-            font-weight: 300;
+            font-weight: 400;
             font-size: 1.25rem;
             letter-spacing: 0.06em;
             color: var(--text-medium);
@@ -248,8 +245,8 @@
 
         .compact-mark {
             font-family: var(--font-display);
-            font-weight: 300;
-            font-size: 0.72rem;
+            font-weight: 400;
+            font-size: var(--fs-xs);
             letter-spacing: 0.2em;
             text-transform: lowercase;
             color: var(--text-ghost);
@@ -260,7 +257,7 @@
         .compact-divider {
             width: 1px;
             height: 18px;
-            background: rgba(30, 16, 64, 0.18);
+            background: rgba(30, 45, 53, 0.18);
             flex-shrink: 0;
         }
 
@@ -269,12 +266,11 @@
             min-width: 0;
             background: transparent;
             border: none;
-            border-bottom: 1px solid rgba(30, 16, 64, 0.18);
+            border-bottom: 1px solid rgba(30, 45, 53, 0.18);
             outline: none;
             font-family: var(--font-display);
-            font-style: italic;
-            font-weight: 300;
-            font-size: 0.98rem;
+            font-weight: 400;
+            font-size: var(--fs-sm);
             color: var(--text-dark);
             padding: 0.2rem 0;
             transition: border-color 0.3s ease;
@@ -285,7 +281,7 @@
         }
 
         #compact-input:focus {
-            border-color: rgba(30, 16, 64, 0.38);
+            border-color: rgba(30, 45, 53, 0.38);
         }
 
         .compact-go {
@@ -305,7 +301,7 @@
         /* Cards area */
         .cards-wrap {
             flex: 1;
-            padding: 2.5rem 1.5rem 4rem;
+            padding: var(--sp-lg) var(--sp-sm) var(--sp-xl);
             max-width: 700px;
             margin: 0 auto;
             width: 100%;
@@ -313,13 +309,13 @@
 
         .reveal-label {
             font-family: var(--font-display);
-            font-weight: 300;
-            font-size: 0.72rem;
+            font-weight: 400;
+            font-size: var(--fs-xs);
             letter-spacing: 0.2em;
             text-transform: lowercase;
             color: var(--text-ghost);
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: var(--sp-lg);
         }
 
         #cards-container {
@@ -330,12 +326,12 @@
 
         /* ─── SONG CARDS ──────────────────────────────────── */
         .song-card {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.14);
             backdrop-filter: blur(22px);
             -webkit-backdrop-filter: blur(22px);
-            border: 1px solid rgba(255, 255, 255, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.38);
             border-radius: 22px;
-            padding: 2rem 2.2rem 1.8rem;
+            padding: var(--sp-lg) var(--sp-md) var(--sp-lg);
             position: relative;
             overflow: hidden;
             opacity: 0;
@@ -345,7 +341,7 @@
                 transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
                 box-shadow 280ms ease;
             box-shadow:
-                0 4px 28px rgba(46, 20, 85, 0.1),
+                0 4px 28px rgba(30, 45, 53, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.52);
         }
 
@@ -356,7 +352,7 @@
 
         .song-card.visible:hover {
             box-shadow:
-                0 10px 44px rgba(46, 20, 85, 0.17),
+                0 10px 44px rgba(30, 45, 53, 0.17),
                 inset 0 1px 0 rgba(255, 255, 255, 0.6);
             border-color: rgba(255, 255, 255, 0.56);
         }
@@ -378,8 +374,8 @@
 
         .song-title {
             font-family: var(--font-display);
-            font-weight: 500;
-            font-size: 1.9rem;
+            font-weight: 600;
+            font-size: var(--fs-lg);
             line-height: 1.15;
             color: var(--accent);
             margin-bottom: 0.45rem;
@@ -390,13 +386,13 @@
             display: flex;
             align-items: center;
             gap: 0.45rem;
-            margin-bottom: 1.3rem;
+            margin-bottom: var(--sp-sm);
         }
 
         .artist {
             font-family: var(--font-body);
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: var(--fs-sm);
             color: var(--text-medium);
             letter-spacing: 0.025em;
         }
@@ -409,28 +405,28 @@
         .year {
             font-family: var(--font-body);
             font-weight: 300;
-            font-size: 0.82rem;
+            font-size: var(--fs-xs);
             color: var(--text-muted);
         }
 
         .card-rule {
             height: 1px;
-            background: linear-gradient(90deg, rgba(30,16,64,0.14) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(30,45,53,0.14) 0%, transparent 100%);
             margin-bottom: 1.2rem;
         }
 
         .song-why {
             font-family: var(--font-body);
             font-weight: 300;
-            font-size: 0.93rem;
+            font-size: var(--fs-sm);
             line-height: 1.8;
             color: var(--text-dark);
-            margin-bottom: 1.55rem;
+            margin-bottom: var(--sp-sm);
         }
 
         .song-links {
             display: flex;
-            gap: 0.65rem;
+            gap: var(--sp-xs);
             flex-wrap: wrap;
         }
 
