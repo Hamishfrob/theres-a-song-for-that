@@ -18,7 +18,7 @@
             --text-muted:  rgba(30, 45, 53, 0.45);
             --text-ghost:  rgba(30, 45, 53, 0.28);
 
-            --accent: #7db5a0;
+            --accent: #5a9e8a;
 
             --glow-1: rgba(140, 175, 195, 0.55);
             --glow-2: rgba(200, 210, 200, 0.55);
@@ -698,7 +698,7 @@
         }
 
         // ── API ────────────────────────────────────────────
-        async function query(description) {
+        async function query(description, reshuffle = false) {
             if (!description.trim()) return;
             currentDescription = description.trim();
             showThinking();
@@ -706,7 +706,7 @@
                 const res  = await fetch('/api/match', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ description: description.trim() })
+                    body: JSON.stringify({ description: description.trim(), reshuffle })
                 });
                 const data = await res.json();
                 if (!res.ok || data.error) throw new Error(data.error || 'Server error');
@@ -732,7 +732,7 @@
         });
 
         document.getElementById('reshuffle-btn').addEventListener('click', () => {
-            if (currentDescription) query(currentDescription);
+            if (currentDescription) query(currentDescription, true);
         });
 
         document.getElementById('start-over-btn').addEventListener('click', () => {

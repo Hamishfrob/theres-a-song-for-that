@@ -46,6 +46,16 @@ def match():
         return jsonify({'error': 'description is required'}), 400
 
     description = data['description'].strip()
+    reshuffle = data.get('reshuffle', False)
+
+    user_message = description
+    if reshuffle:
+        user_message = (
+            f"{description}\n\n"
+            "Give me 3 completely different songs from what you would typically suggest first. "
+            "Avoid the most obvious matches. Go deeper — different genres, different eras, "
+            "unexpected angles on the same feeling."
+        )
 
     try:
         message = client.messages.create(
@@ -54,7 +64,7 @@ def match():
             system=PROMPT,
             messages=[{
                 'role': 'user',
-                'content': description
+                'content': user_message
             }]
         )
         text = message.content[0].text
