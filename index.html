@@ -298,6 +298,31 @@
 
         .compact-go:hover { color: var(--text-dark); }
 
+        .compact-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-xs);
+            flex-shrink: 0;
+        }
+
+        .compact-action {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: var(--fs-xs);
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            padding: 0.2rem var(--sp-xs);
+            flex-shrink: 0;
+            transition: color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .compact-action:hover {
+            color: var(--text-dark);
+        }
+
         /* Cards area */
         .cards-wrap {
             flex: 1;
@@ -500,6 +525,10 @@
                 spellcheck="false"
             />
             <button class="compact-go" id="compact-submit">→</button>
+            <div class="compact-actions">
+                <button class="compact-action" id="reshuffle-btn">↺ reshuffle</button>
+                <button class="compact-action" id="start-over-btn">× start over</button>
+            </div>
         </div>
 
         <div class="cards-wrap">
@@ -520,14 +549,17 @@
             'reaching back through time...'
         ];
         const GLOWS = [
-            'rgba(245, 168, 188, 0.65)',
-            'rgba(250, 196, 96, 0.65)',
-            'rgba(188, 114, 210, 0.65)'
+            'rgba(140, 175, 195, 0.55)',
+            'rgba(200, 210, 200, 0.55)',
+            'rgba(125, 181, 160, 0.50)'
         ];
         const PARTICLE_COLORS = [
-            '#f5b4c2', '#fde0b0', '#c070aa',
-            '#f0c060', '#e890b4', '#d4a0e8', '#fbd0a0'
+            '#a8c4d4', '#cdd9de', '#7db5a0',
+            '#b8ccd2', '#8fb5c8', '#c8d4d8', '#7a96aa'
         ];
+
+        // ── State ──────────────────────────────────────────
+        let currentDescription = '';
 
         // ── DOM ────────────────────────────────────────────
         const inputScreen    = document.getElementById('input-screen');
@@ -668,6 +700,7 @@
         // ── API ────────────────────────────────────────────
         async function query(description) {
             if (!description.trim()) return;
+            currentDescription = description.trim();
             showThinking();
             try {
                 const res  = await fetch('/api/match', {
@@ -696,6 +729,17 @@
         );
         compactInput.addEventListener('keydown', e => {
             if (e.key === 'Enter') query(compactInput.value);
+        });
+
+        document.getElementById('reshuffle-btn').addEventListener('click', () => {
+            if (currentDescription) query(currentDescription);
+        });
+
+        document.getElementById('start-over-btn').addEventListener('click', () => {
+            resultsScreen.style.display = 'none';
+            inputScreen.style.display = 'flex';
+            mainInput.value = '';
+            mainInput.focus();
         });
 
         // Focus on load
